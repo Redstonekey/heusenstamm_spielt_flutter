@@ -3,7 +3,7 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     branches:
-      - main # Oder den Branch, den du für deine Hauptentwicklung nutzt (z.B. master)
+      - main
 
 jobs:
   build_and_deploy:
@@ -18,15 +18,16 @@ jobs:
       with:
         channel: 'stable'
 
-    - name: Get Flutter dependencies
+    - name: Install Dependencies
       run: flutter pub get
 
     - name: Build Flutter Web
-      run: flutter build web --release --base-href /heuesenstamm_spielt_flutter/ # Wichtig: Passe <DEIN_REPOSITORY_NAME> an!
+      run: flutter build web --release --base-href /heusenstamm_spielt/
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
-        github_token: ${{ secrets.ACTION_TOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }} # <-- Use default token unless you need custom one
         publish_dir: ./build/web
+        publish_branch: web
         force_orphan: true
