@@ -18,8 +18,9 @@ class GameOfMonthSection extends StatefulWidget {
 }
 
 class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProviderStateMixin {
-  // Cache for Wikipedia descriptions
+  // Cache for Wikipedia descriptions and images
   final Map<String, String> _wikiDescriptions = {};
+  final Map<String, String> _wikiImages = {};
   String? _wikipediaUrl;
   String _getCurrentMonthYearString() {
     final now = DateTime.now();
@@ -95,6 +96,10 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
               if (candidate['name'] == gameName) {
                 candidate['description'] = data['extract'];
               }
+            }
+            // Save Wikipedia image if available
+            if (data['thumbnail'] != null && data['thumbnail']['source'] != null) {
+              _wikiImages[gameName] = data['thumbnail']['source'];
             }
           });
         }
@@ -375,6 +380,9 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
     if (currentGameOfMonth == null) {
       return const SizedBox.shrink();
     }
+    String? imageUrl = (currentGameOfMonth != null && _wikiImages[currentGameOfMonth!] != null)
+        ? _wikiImages[currentGameOfMonth!]
+        : null;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -401,10 +409,15 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
                       height: 400,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          ImageService.getPicsumImage(width: 400, height: 400),
-                          fit: BoxFit.cover,
-                        ),
+                        child: imageUrl != null
+                            ? Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                ImageService.getPicsumImage(width: 400, height: 400),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                   ),
@@ -422,10 +435,15 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
                     height: 250,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        ImageService.getPicsumImage(width: 400, height: 250),
-                        fit: BoxFit.cover,
-                      ),
+                      child: imageUrl != null
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              ImageService.getPicsumImage(width: 400, height: 250),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   _buildGameInfo(),
@@ -687,6 +705,7 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
   }
 
   Widget _buildVotingCard(Map<String, dynamic> game) {
+    String? imageUrl = (_wikiImages[game['name']] != null) ? _wikiImages[game['name']] : null;
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -700,46 +719,51 @@ class _GameOfMonthSectionState extends State<GameOfMonthSection> with TickerProv
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Container(
               height: 120,
-              child: Image.network(
-                ImageService.getPicsumImage( width: 300, height: 120),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFF1976D2).withOpacity(0.1),
-                          const Color(0xFF1976D2).withOpacity(0.05),
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.casino,
-                            size: 32,
-                            color: const Color(0xFF1976D2),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            game['name'],
-                            style: GoogleFonts.roboto(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF1976D2),
+              child: imageUrl != null
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      ImageService.getPicsumImage(width: 300, height: 120),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFF1976D2).withOpacity(0.1),
+                                const Color(0xFF1976D2).withOpacity(0.05),
+                              ],
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                        ],
-                      ),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.casino,
+                                  size: 32,
+                                  color: const Color(0xFF1976D2),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  game['name'],
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF1976D2),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
           // Game info

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/home_screen.dart';
+import 'screens/admin_login_screen.dart';
 
 
 void main() async {
@@ -27,7 +28,6 @@ class HeusenstammSpieltApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF1976D2),
           brightness: Brightness.light,
-          
           primary: const Color(0xFF1976D2),
           secondary: const Color(0xFFFF6B35),
           surface: const Color(0xFFFAFAFA),
@@ -63,7 +63,11 @@ class HeusenstammSpieltApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      initialRoute: '/', // Add initial route
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/admin': (context) => const AdminLoginScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
