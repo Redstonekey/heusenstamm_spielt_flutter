@@ -1,8 +1,16 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://xvzanzuenlcmcotzgktz.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2emFuenVlbmxjbWNvdHpna3R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTg1MjEsImV4cCI6MjA2Nzk3NDUyMX0.03Fdybrs4YNTQWbPp0EqO6ZGuVwDFZGqo9ANR-dPqwE',
+  );
   runApp(const HeusenstammSpieltApp());
 }
 
