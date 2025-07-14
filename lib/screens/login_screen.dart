@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'admin_panel_screen.dart';
 
-class AdminLoginScreen extends StatefulWidget {
-  const AdminLoginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<AdminLoginScreen> createState() => _AdminLoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _AdminLoginScreenState extends State<AdminLoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
@@ -26,25 +25,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      final user = response.user;
-      if (response.session != null && user != null) {
-        // Fetch admin emails from 'admin' table
-        final adminRows = await supabase.from('admin').select('email');
-        final adminEmails = (adminRows as List)
-            .map((row) => (row['email'] as String).toLowerCase())
-            .toList();
-        final userEmail = (user.email ?? '').toLowerCase();
-        if (!adminEmails.contains(userEmail)) {
-          setState(() {
-            _error = 'Kein Admin-Zugang für diese E-Mail.';
-          });
-          await supabase.auth.signOut();
-          return;
-        }
+      if (response.session != null) {
         if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AdminPanelScreen()),
-        );
+        Navigator.of(context).pop();
       } else {
         setState(() {
           _error = 'Login fehlgeschlagen.';
@@ -64,7 +47,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Login')),
+      appBar: AppBar(title: const Text('Login')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

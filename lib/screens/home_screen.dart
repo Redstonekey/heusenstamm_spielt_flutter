@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/about_section.dart';
 import '../widgets/game_of_month_section.dart';
+import '../widgets/tournament_list_section.dart';
 import '../widgets/calendar_section.dart';
 import '../widgets/footer_section.dart';
 import 'image_test_screen.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   final GlobalKey _heroKey = GlobalKey();
   final GlobalKey _aboutKey = GlobalKey();
   final GlobalKey _gameOfMonthKey = GlobalKey();
+  final GlobalKey _tournamentKey = GlobalKey();
   final GlobalKey _calendarKey = GlobalKey();
   final GlobalKey _footerKey = GlobalKey();
 
@@ -124,8 +126,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _buildNavButton('Home', 0),
                     _buildNavButton('Über uns', 1),
                     _buildNavButton('Spiel des Monats', 2),
-                    _buildNavButton('Termine', 3),
-                    _buildNavButton('Kontakt', 4),
+                    _buildNavButton('Turniere', 3),
+                    _buildNavButton('Termine', 4),
+                    _buildNavButton('Kontakt', 5),
                   ] else ...[
                     PopupMenuButton<int>(
                       icon: const Icon(Icons.menu, color: Colors.black87),
@@ -134,9 +137,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const PopupMenuItem(value: 0, child: Text('Home')),
                         const PopupMenuItem(value: 1, child: Text('Über uns')),
                         const PopupMenuItem(value: 2, child: Text('Spiel des Monats')),
-                        const PopupMenuItem(value: 3, child: Text('Termine')),
-                        const PopupMenuItem(value: 4, child: Text('Kontakt')),
-                        const PopupMenuItem(value: 5, child: Text('🧪 Image Test')),
+                        const PopupMenuItem(value: 3, child: Text('Turniere')),
+                        const PopupMenuItem(value: 4, child: Text('Termine')),
+                        const PopupMenuItem(value: 5, child: Text('Kontakt')),
+                        const PopupMenuItem(value: 6, child: Text('🧪 Image Test')),
                       ],
                     ),
                   ],
@@ -153,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             HeroSection(key: _heroKey),
             AboutSection(key: _aboutKey),
             GameOfMonthSection(key: _gameOfMonthKey),
+            TournamentListSection(key: _tournamentKey),
             CalendarSection(key: _calendarKey),
             FooterSection(key: _footerKey),
           ],
@@ -187,11 +192,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _scrollToSection(int index) {
     final contextList = [
-      _heroKey.currentContext,
-      _aboutKey.currentContext,
-      _gameOfMonthKey.currentContext,
-      _calendarKey.currentContext,
-      _footerKey.currentContext,
+      _heroKey.currentContext, // 0
+      _aboutKey.currentContext, // 1
+      _gameOfMonthKey.currentContext, // 2
+      _tournamentKey.currentContext, // 3
+      _calendarKey.currentContext, // 4
+      _footerKey.currentContext, // 5
     ];
     if (index < 0 || index >= contextList.length) return;
     final sectionContext = contextList[index];

@@ -1,53 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'admin_panel_screen.dart';
 
-class AdminLoginScreen extends StatefulWidget {
-  const AdminLoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<AdminLoginScreen> createState() => _AdminLoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _AdminLoginScreenState extends State<AdminLoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _nameController = TextEditingController();
   bool _loading = false;
   String? _error;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() {
       _loading = true;
       _error = null;
     });
     final supabase = Supabase.instance.client;
     try {
-      final response = await supabase.auth.signInWithPassword(
+      final response = await supabase.auth.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        data: {'display_name': _nameController.text.trim()},
       );
-      final user = response.user;
-      if (response.session != null && user != null) {
-        // Fetch admin emails from 'admin' table
-        final adminRows = await supabase.from('admin').select('email');
-        final adminEmails = (adminRows as List)
-            .map((row) => (row['email'] as String).toLowerCase())
-            .toList();
-        final userEmail = (user.email ?? '').toLowerCase();
-        if (!adminEmails.contains(userEmail)) {
-          setState(() {
-            _error = 'Kein Admin-Zugang für diese E-Mail.';
-          });
-          await supabase.auth.signOut();
-          return;
-        }
+      if (response.user != null) {
         if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AdminPanelScreen()),
-        );
+        Navigator.of(context).pop();
       } else {
         setState(() {
-          _error = 'Login fehlgeschlagen.';
+          _error = 'Registrierung fehlgeschlagen.';
         });
       }
     } catch (e) {
@@ -64,7 +49,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Login')),
+      appBar: AppBar(title: const Text('Registrieren')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -72,6 +57,13 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  autofillHints: const [AutofillHints.name],
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'E-Mail'),
@@ -93,10 +85,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _loading ? null : _login,
+                    onPressed: _loading ? null : _register,
                     child: _loading
                         ? const CircularProgressIndicator()
-                        : const Text('Login'),
+                        : const Text('Registrieren'),
                   ),
                 ),
               ],

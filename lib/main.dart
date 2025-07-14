@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/home_screen.dart';
+import 'screens/register_screen.dart';
+import 'screens/tournament_page.dart';
+import 'screens/login_screen.dart';
 import 'screens/admin_login_screen.dart';
 
 
@@ -64,9 +67,25 @@ class HeusenstammSpieltApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: '/', // Add initial route
-      routes: {
-        '/': (context) => const HomeScreen(),
-        '/admin': (context) => const AdminLoginScreen(),
+      onGenerateRoute: (settings) {
+        if (settings.name != null && settings.name!.startsWith('/tournament/')) {
+          final id = settings.name!.substring('/tournament/'.length);
+          return MaterialPageRoute(
+            builder: (context) => TournamentPage(tournamentId: id),
+            settings: settings,
+          );
+        }
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(builder: (context) => const HomeScreen());
+          case '/admin':
+            return MaterialPageRoute(builder: (context) => const AdminLoginScreen());
+          case '/register':
+            return MaterialPageRoute(builder: (context) => const RegisterScreen());
+          case '/login':
+            return MaterialPageRoute(builder: (context) => const LoginScreen());
+        }
+        return null;
       },
       debugShowCheckedModeBanner: false,
     );
